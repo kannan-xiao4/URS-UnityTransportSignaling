@@ -16,7 +16,11 @@ public class UnityTransportClientSignaling : ISignaling
     public UnityTransportClientSignaling(string url, float timeout, SynchronizationContext mainThreadContext)
     {
         var portStr = url.Split(':').LastOrDefault();
-        port = string.IsNullOrEmpty(portStr) ? (ushort) 9000 : UInt16.Parse(portStr);
+        if (!ushort.TryParse(portStr, out port))
+        {
+            port = 9000;
+        }
+
         m_mainThreadContext = mainThreadContext;
     }
 
