@@ -1,0 +1,105 @@
+[attr]lfsbinary  filter=lfs diff=lfs merge=lfs -text
+[attr]sourcecode !filter    !diff    !merge    !text
+
+**/Assets/**              filter=lfs diff=lfs merge=lfs -text
+.* !filter !diff !merge text eol=lf
+LightingData.asset filter=lfs diff=lfs merge=lfs -text
+
+#Image
+*.[aA][iI]         filter=lfs diff=lfs merge=lfs -text
+*.[eE][xX][rR]     filter=lfs diff=lfs merge=lfs -text
+*.[gG][iI][fF]     filter=lfs diff=lfs merge=lfs -text
+*.[hH][dD][rR]     filter=lfs diff=lfs merge=lfs -text
+*.[jJ][pP][eE][gG] filter=lfs diff=lfs merge=lfs -text
+*.[jJ][pP][gG]     filter=lfs diff=lfs merge=lfs -text
+*.[pP][nN][gG]     filter=lfs diff=lfs merge=lfs -text
+*.[pP][sS][dD]     filter=lfs diff=lfs merge=lfs -text
+*.[tT][gG][aA]     filter=lfs diff=lfs merge=lfs -text
+*.[tT][iI][fF]     filter=lfs diff=lfs merge=lfs -text
+*.[tT][iI][fF][fF] filter=lfs diff=lfs merge=lfs -text
+#Audio
+*.[aA][iI][fF]      filter=lfs diff=lfs merge=lfs -text
+*.[aA][iI][fF][fF]  filter=lfs diff=lfs merge=lfs -text
+*.[mM][pP]3         filter=lfs diff=lfs merge=lfs -text
+*.[oO][gG][gG]      filter=lfs diff=lfs merge=lfs -text
+*.[wW][aA][vV]      filter=lfs diff=lfs merge=lfs -text
+#Video
+*.[aA][sS][fF]      filter=lfs diff=lfs merge=lfs -text
+*.[aA][vV][iI]      filter=lfs diff=lfs merge=lfs -text
+*.[fF][lL][vV]      filter=lfs diff=lfs merge=lfs -text
+*.[mM]4[aA]         filter=lfs diff=lfs merge=lfs -text
+*.[mM]4[vV]         filter=lfs diff=lfs merge=lfs -text
+*.[mM][kK][vV]      filter=lfs diff=lfs merge=lfs -text
+*.[mM][oO][vV]      filter=lfs diff=lfs merge=lfs -text
+*.[mM][pP]4         filter=lfs diff=lfs merge=lfs -text
+*.[mM][pP][eE][gG]  filter=lfs diff=lfs merge=lfs -text
+*.[mM][pP][gG]      filter=lfs diff=lfs merge=lfs -text
+*.[qQ][tT]          filter=lfs diff=lfs merge=lfs -text
+*.[vV][oO][bB]      filter=lfs diff=lfs merge=lfs -text
+*.[wW][eE][bB][mM]  filter=lfs diff=lfs merge=lfs -text
+*.[wW][mM][vV]      filter=lfs diff=lfs merge=lfs -text
+#3D Object
+*.[aA][nN][iI][mM]     filter=lfs diff=lfs merge=lfs -text
+*.[bB][lL][eE][nN][dD] filter=lfs diff=lfs merge=lfs -text
+*.[bB][yY][tT][eE][sS] filter=lfs diff=lfs merge=lfs -text
+*.[fF][bB][xX]         filter=lfs diff=lfs merge=lfs -text
+*.[oO][bB][jJ]         filter=lfs diff=lfs merge=lfs -text
+*.[tT][oO][gG]         filter=lfs diff=lfs merge=lfs -text
+*.[vV][rR][mM]         filter=lfs diff=lfs merge=lfs -text
+*.baked.asset          filter=lfs diff=lfs merge=lfs -text
+# Executable
+*.[aA]         filter=lfs diff=lfs merge=lfs -text
+*.[dD][aA][tT] filter=lfs diff=lfs merge=lfs -text
+*.[dD][lL][lL] filter=lfs diff=lfs merge=lfs -text
+*.[eE][xX][eE] filter=lfs diff=lfs merge=lfs -text
+*.[sS][oO]     filter=lfs diff=lfs merge=lfs -text
+# Fonts
+*.[oO][tT][fF] filter=lfs diff=lfs merge=lfs -text
+*.[tT][tT][fF] filter=lfs diff=lfs merge=lfs -text
+# Archive
+*.[cC][aA][bB] filter=lfs diff=lfs merge=lfs -text
+*.[jJ][aA][rR] filter=lfs diff=lfs merge=lfs -text
+*.[pP][aA][kK] filter=lfs diff=lfs merge=lfs -text
+*.[tT][gG][zZ] filter=lfs diff=lfs merge=lfs -text
+*.[zZ][iI][pP] filter=lfs diff=lfs merge=lfs -text
+#ETC
+*.[aA][cC][bB]             filter=lfs diff=lfs merge=lfs -text
+*.[lL][xX][oO]             filter=lfs diff=lfs merge=lfs -text
+*.[mM][dD][bB]             filter=lfs diff=lfs merge=lfs -text
+*.[pP][dD][fF]             filter=lfs diff=lfs merge=lfs -text
+*.[rR][eE][aA][sS][oO][nN] filter=lfs diff=lfs merge=lfs -text
+*.[rR][nN][sS]             filter=lfs diff=lfs merge=lfs -text
+*.[uU][nN][iI][tT][yY][pP][aA][cC][kK][aA][gG][eE]         filter=lfs diff=lfs merge=lfs -text
+
+*.bat     !filter    !diff    !merge    text eol=crlf encoding=cp932
+*.c       !filter    !diff    !merge    text eol=lf
+*.cginc   !filter    !diff    !merge    !text
+*.cmd     !filter    !diff    !merge    !text
+*.cpp     !filter    !diff    !merge    !text
+*.cs      !filter    !diff    !merge    text eol=lf
+*.css     !filter    !diff    !merge    !text
+*.go      !filter    !diff    !merge    !text
+*.htm     !filter    !diff    !merge    text eol=lf
+*.html    !filter    !diff    !merge    text eol=lf
+*.info    !filter    !diff    !merge    !text
+*.js      !filter    !diff    !merge    text eol=lf
+*.json    !filter    !diff    !merge    text eol=lf
+*.mat     !filter    !diff    !merge    text eol=lf
+*.md      !filter    !diff    !merge    text eol=lf
+*.meta    !filter    !diff    !merge    text eol=lf
+*.plist   !filter    !diff    !merge    !text
+*.shader  !filter    !diff    !merge    text eol=lf
+*.sql     !filter    !diff    !merge    text eol=lf
+*.t4      !filter    !diff    !merge    !text
+*.ts      !filter    !diff    !merge    !text
+*.tt      !filter    !diff    !merge    !text
+*.ttinclude !filter    !diff    !merge    !text
+*.txt     !filter    !diff    !merge    !text
+*.unity   !filter    !diff    !merge    !text
+*.vcproj  !filter    !diff    !merge    !text
+*.xaml    !filter    !diff    !merge    !text
+*.yaml    !filter    !diff    !merge    !text
+*.yml     !filter    !diff    !merge    !text
+*.rsp     !filter    !diff    !merge    !text
+
+DebugSetting.asset       !filter    !diff    !merge    !text
