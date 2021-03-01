@@ -1,22 +1,19 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
-using Unity.Collections;
 using Unity.Networking.Transport;
 using Unity.RenderStreaming.Signaling;
 using Unity.WebRTC;
 using UnityEngine;
-using UnityEngine.Assertions;
 
-public class UnityTransportServerSignaling : ISignaling
+public class UnityTransportClientSignaling : ISignaling
 {
     private SynchronizationContext m_mainThreadContext;
     private bool m_running;
     private Thread m_signalingThread;
-
     private ushort port;
 
-    public UnityTransportServerSignaling(string url, float timeout, SynchronizationContext mainThreadContext)
+    public UnityTransportClientSignaling(string url, float timeout, SynchronizationContext mainThreadContext)
     {
         var portStr = url.Split(':').LastOrDefault();
         port = string.IsNullOrEmpty(portStr) ? (ushort) 9000 : UInt16.Parse(portStr);
@@ -24,7 +21,8 @@ public class UnityTransportServerSignaling : ISignaling
     }
 
     private NetworkDriver m_Driver;
-    private NativeList<NetworkConnection> m_Connections;
+    private NetworkConnection m_Connection;
+    private bool m_Done;
 
     public void Start()
     {
@@ -49,72 +47,55 @@ public class UnityTransportServerSignaling : ISignaling
     private void Update()
     {
         m_Driver = NetworkDriver.Create();
-        var endpoint = NetworkEndPoint.AnyIpv4;
+        m_Connection = default(NetworkConnection);
+
+        var endpoint = NetworkEndPoint.LoopbackIpv4;
         endpoint.Port = port;
+        m_Connection = m_Driver.Connect(endpoint);
 
-        while (m_running && m_Driver.Bind(endpoint) != 0)
-        {
-            Debug.Log($"Failed to bind to port {port}");
-            Thread.Sleep(3000);
-        }
-
-        m_Driver.Listen();
-        m_Connections = new NativeList<NetworkConnection>(16, Allocator.Persistent);
 
         while (m_running)
         {
             m_Driver.ScheduleUpdate().Complete();
 
-            // CleanUpConnections
-            for (int i = 0; i < m_Connections.Length; i++)
+            if (!m_Connection.IsCreated)
             {
-                if (!m_Connections[i].IsCreated)
-                {
-                    m_Connections.RemoveAtSwapBack(i);
-                    --i;
-                }
-            }
-
-            // AcceptNewConnections
-            NetworkConnection c;
-            while ((c = m_Driver.Accept()) != default(NetworkConnection))
-            {
-                m_Connections.Add(c);
-                Debug.Log("Accepted a connection");
+                if (!m_Done)
+                    Debug.Log("Something went wrong during connect");
+                continue;
             }
 
             DataStreamReader stream;
-            for (int i = 0; i < m_Connections.Length; i++)
+            NetworkEvent.Type cmd;
+
+            while ((cmd = m_Connection.PopEvent(m_Driver, out stream)) != NetworkEvent.Type.Empty)
             {
-                Assert.IsTrue(m_Connections[i].IsCreated);
-
-                NetworkEvent.Type cmd;
-                while ((cmd = m_Driver.PopEventForConnection(m_Connections[i], out stream)) != NetworkEvent.Type.Empty)
+                if (cmd == NetworkEvent.Type.Connect)
                 {
-                    if (cmd == NetworkEvent.Type.Data)
-                    {
-                        uint number = stream.ReadUInt();
+                    Debug.Log("We are now connected to the server");
 
-                        Debug.Log("Got " + number + " from the Client adding + 2 to it.");
-                        number += 2;
-
-                        var writer = m_Driver.BeginSend(NetworkPipeline.Null, m_Connections[i]);
-                        writer.WriteUInt(number);
-                        m_Driver.EndSend(writer);
-                    }
-                    else if (cmd == NetworkEvent.Type.Disconnect)
-                    {
-                        Debug.Log("Client disconnected from server");
-                        m_Connections[i] = default(NetworkConnection);
-                    }
+                    uint value = 1;
+                    var writer = m_Driver.BeginSend(m_Connection);
+                    writer.WriteUInt(value);
+                    m_Driver.EndSend(writer);
+                }
+                else if (cmd == NetworkEvent.Type.Data)
+                {
+                    uint value = stream.ReadUInt();
+                    Debug.Log("Got the value = " + value + " back from the server");
+                    m_Done = true;
+                    m_Connection.Disconnect(m_Driver);
+                    m_Connection = default(NetworkConnection);
+                }
+                else if (cmd == NetworkEvent.Type.Disconnect)
+                {
+                    Debug.Log("Client got disconnected from server");
+                    m_Connection = default(NetworkConnection);
                 }
             }
-
-            Thread.Sleep(100);
         }
 
         m_Driver.Dispose();
-        m_Connections.Dispose();
     }
 
     public event OnStartHandler OnStart;
