@@ -30,76 +30,57 @@ public class UnityTransportClientSignaling : ISignaling
 
     public void Start()
     {
-        if (m_running)
-            throw new InvalidOperationException("This object is already started.");
-
-        m_running = true;
-        m_signalingThread = new Thread(Update);
-        m_signalingThread.Start();
+        m_Driver = NetworkDriver.Create();
+        m_Connection = default(NetworkConnection);
+        var endpoint = NetworkEndPoint.LoopbackIpv4;
+        endpoint.Port = port;
+        m_Connection = m_Driver.Connect(endpoint);
     }
 
     public void Stop()
     {
-        if (m_running)
-        {
-            m_running = false;
-            m_signalingThread?.Join();
-            m_signalingThread = null;
-        }
+        m_Connection.Disconnect(m_Driver);
+        m_Driver.Dispose();
     }
 
-    private void Update()
+    public void Update()
     {
-        m_Driver = NetworkDriver.Create();
-        m_Connection = default(NetworkConnection);
+        m_Driver.ScheduleUpdate().Complete();
 
-        var endpoint = NetworkEndPoint.LoopbackIpv4;
-        endpoint.Port = port;
-        m_Connection = m_Driver.Connect(endpoint);
-
-
-        while (m_running)
+        if (!m_Connection.IsCreated)
         {
-            m_Driver.ScheduleUpdate().Complete();
-
-            if (!m_Connection.IsCreated)
-            {
-                if (!m_Done)
-                    Debug.Log("Something went wrong during connect");
-                continue;
-            }
-
-            DataStreamReader stream;
-            NetworkEvent.Type cmd;
-
-            while ((cmd = m_Connection.PopEvent(m_Driver, out stream)) != NetworkEvent.Type.Empty)
-            {
-                if (cmd == NetworkEvent.Type.Connect)
-                {
-                    Debug.Log("We are now connected to the server");
-
-                    uint value = 1;
-                    var writer = m_Driver.BeginSend(m_Connection);
-                    writer.WriteUInt(value);
-                    m_Driver.EndSend(writer);
-                }
-                else if (cmd == NetworkEvent.Type.Data)
-                {
-                    uint value = stream.ReadUInt();
-                    Debug.Log("Got the value = " + value + " back from the server");
-                    m_Done = true;
-                    m_Connection.Disconnect(m_Driver);
-                    m_Connection = default(NetworkConnection);
-                }
-                else if (cmd == NetworkEvent.Type.Disconnect)
-                {
-                    Debug.Log("Client got disconnected from server");
-                    m_Connection = default(NetworkConnection);
-                }
-            }
+            if (!m_Done)
+                Debug.Log("Something went wrong during connect");
         }
 
-        m_Driver.Dispose();
+        DataStreamReader stream;
+        NetworkEvent.Type cmd;
+
+        while ((cmd = m_Connection.PopEvent(m_Driver, out stream)) != NetworkEvent.Type.Empty)
+        {
+            if (cmd == NetworkEvent.Type.Connect)
+            {
+                Debug.Log("We are now connected to the server");
+
+                uint value = 1;
+                var writer = m_Driver.BeginSend(m_Connection);
+                writer.WriteUInt(value);
+                m_Driver.EndSend(writer);
+            }
+            else if (cmd == NetworkEvent.Type.Data)
+            {
+                uint value = stream.ReadUInt();
+                Debug.Log("Got the value = " + value + " back from the server");
+                m_Done = true;
+                m_Connection.Disconnect(m_Driver);
+                m_Connection = default(NetworkConnection);
+            }
+            else if (cmd == NetworkEvent.Type.Disconnect)
+            {
+                Debug.Log("Client got disconnected from server");
+                m_Connection = default(NetworkConnection);
+            }
+        }
     }
 
     public event OnStartHandler OnStart;
