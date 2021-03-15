@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class TestComponent : MonoBehaviour
 {
@@ -11,11 +13,17 @@ public class TestComponent : MonoBehaviour
     {
         var context = SynchronizationContext.Current;
         client = new UnityTransportClientSignaling("localhost", 5.0f, context);
-        server = new UnityTransportServerSignaling("localhost", 5.0f, context);        
+        server = new UnityTransportServerSignaling("localhost", 5.0f, context);
     }
 
     private void Start()
     {
+        client.OnStart += signaling =>
+        {
+            var id = string.Join("", Enumerable.Range(0, 1300).Select(x => Random.Range(0, 9).ToString()));
+            signaling.OpenConnection(id);
+        };
+
         client.Start();
         server.Start();
     }
