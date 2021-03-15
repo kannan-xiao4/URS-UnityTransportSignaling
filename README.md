@@ -7,7 +7,7 @@ git config --global core.ignorecase false
 git config --global core.autocrlf input
 git config --global core.longpaths true
 
-# もしこのがローカル単位で入っていたら殺す
+# もしこのがローカル単位で入っていたら上書きする
 git config --unset core.ignorecase
 git config --unset core.autocrlf
 git config --unset core.longpaths
